@@ -1,20 +1,19 @@
 using Soenneker.SendGrid.HttpClients.Abstract;
-using Soenneker.Tests.FixturedUnit;
-using Xunit;
+using Soenneker.Tests.HostedUnit;
 
 namespace Soenneker.SendGrid.HttpClients.Tests;
 
-[Collection("Collection")]
-public sealed class SendGridOpenApiHttpClientTests : FixturedUnitTest
+[ClassDataSource<Host>(Shared = SharedType.PerTestSession)]
+public sealed class SendGridOpenApiHttpClientTests : HostedUnitTest
 {
     private readonly ISendGridOpenApiHttpClient _httpclient;
 
-    public SendGridOpenApiHttpClientTests(Fixture fixture, ITestOutputHelper output) : base(fixture, output)
+    public SendGridOpenApiHttpClientTests(Host host) : base(host)
     {
         _httpclient = Resolve<ISendGridOpenApiHttpClient>(true);
     }
 
-    [Fact]
+    [Test]
     public void Default()
     {
 
