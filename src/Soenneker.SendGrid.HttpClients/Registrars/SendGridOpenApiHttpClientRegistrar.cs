@@ -6,7 +6,7 @@ using Soenneker.Utils.HttpClientCache.Registrar;
 namespace Soenneker.SendGrid.HttpClients.Registrars;
 
 /// <summary>
-/// Registers the OpenAPI HttpClient wrapper for dependency injection.
+/// Registers the authenticated SendGrid v3 HTTP client provider.
 /// </summary>
 public static class SendGridOpenApiHttpClientRegistrar
 {

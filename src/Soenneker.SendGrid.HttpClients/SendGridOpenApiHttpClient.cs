@@ -11,13 +11,13 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.SendGrid.HttpClients;
 
-///<inheritdoc cref="ISendGridOpenApiHttpClient"/>
 public sealed class SendGridOpenApiHttpClient : ISendGridOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
     private readonly IConfiguration _config;
+    private readonly string _cacheKey = $"{nameof(SendGridOpenApiHttpClient)}:{Guid.NewGuid():N}";
 
-    private const string _prodBaseUrl = "https://api.sendgrid.com";
+    private const string _prodBaseUrl = "https://api.sendgrid.com/";
 
     public SendGridOpenApiHttpClient(IHttpClientCache httpClientCache, IConfiguration config)
     {
@@ -27,11 +27,11 @@ public sealed class SendGridOpenApiHttpClient : ISendGridOpenApiHttpClient
 
     public ValueTask<HttpClient> Get(CancellationToken cancellationToken = default)
     {
-        return _httpClientCache.Get(nameof(SendGridOpenApiHttpClient), (config: _config, baseUrl: _config["SendGrid:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
+        return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config["SendGrid:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
             var apiKey = state.config.GetValueStrict<string>("SendGrid:ApiKey");
-            string authHeaderName = state.config["SendGrid:AuthHeaderName"] ?? "Bearer {token}";
-            string authHeaderValueTemplate = state.config["SendGrid:AuthHeaderValueTemplate"] ?? "{token}";
+            string authHeaderName = state.config["SendGrid:AuthHeaderName"] ?? "Authorization";
+            string authHeaderValueTemplate = state.config["SendGrid:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
 
             return new HttpClientOptions
@@ -45,20 +45,13 @@ public sealed class SendGridOpenApiHttpClient : ISendGridOpenApiHttpClient
         }, cancellationToken);
     }
 
-    /// <summary>
-    /// Releases resources used by the current instance.
-    /// </summary>
     public void Dispose()
     {
-        _httpClientCache.RemoveSync(nameof(SendGridOpenApiHttpClient));
+        _httpClientCache.RemoveSync(_cacheKey);
     }
 
-    /// <summary>
-    /// Asynchronously releases resources used by the current instance.
-    /// </summary>
-    /// <returns>A task that represents the asynchronous operation.</returns>
     public ValueTask DisposeAsync()
     {
-        return _httpClientCache.Remove(nameof(SendGridOpenApiHttpClient));
+        return _httpClientCache.Remove(_cacheKey);
     }
 }
