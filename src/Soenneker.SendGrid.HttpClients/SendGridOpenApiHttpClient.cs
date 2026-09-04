@@ -11,6 +11,7 @@ using Soenneker.Utils.HttpClientCache.Abstract;
 
 namespace Soenneker.SendGrid.HttpClients;
 
+/// <inheritdoc cref="ISendGridOpenApiHttpClient" />
 public sealed class SendGridOpenApiHttpClient : ISendGridOpenApiHttpClient
 {
     private readonly IHttpClientCache _httpClientCache;
