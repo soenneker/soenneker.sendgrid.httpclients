@@ -30,7 +30,7 @@ public sealed class SendGridOpenApiHttpClient : ISendGridOpenApiHttpClient
     {
         return _httpClientCache.Get(_cacheKey, (config: _config, baseUrl: _config["SendGrid:ClientBaseUrl"] ?? _prodBaseUrl), static state =>
         {
-            var apiKey = state.config.GetValueStrict<string>("SendGrid:ApiKey");
+            var apiKey = state.config.GetStringStrict("SendGrid:ApiKey");
             string authHeaderName = state.config["SendGrid:AuthHeaderName"] ?? "Authorization";
             string authHeaderValueTemplate = state.config["SendGrid:AuthHeaderValueTemplate"] ?? "Bearer {token}";
             string authHeaderValue = authHeaderValueTemplate.Replace("{token}", apiKey, StringComparison.Ordinal);
